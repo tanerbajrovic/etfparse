@@ -7,7 +7,20 @@ import argparse
 __version__ = '1.0.0'
 
 
-def main(filename: str) -> None:
+def add_options(parser: argparse.ArgumentParser) -> None:
+    """
+    Adds following options to the argument parser
+    """
+    parser.add_argument('filename', nargs='?', default='autotest2',
+                        help='Input the name of your autotest file',
+                        type=argparse.FileType('r', encoding='UTF-8'))
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    add_options(parser)
+    args = parser.parse_args()
+    filename = args.filename.name
     try:
         json_file = get_json_file(filename)
         homework_name = json_file['name']
@@ -42,9 +55,4 @@ def get_json_file(filename: str):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('filename', nargs='?', default='autotest2',
-                        help='Input the name of your autotest file',
-                        type=argparse.FileType('r', encoding='UTF-8'))
-    args = parser.parse_args()
-    main(args.filename.name)
+    main()
