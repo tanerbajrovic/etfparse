@@ -1,10 +1,5 @@
-#!/usr/bin/env python3
-
 import json
 import argparse
-
-
-__version__ = '1.0.0'
 
 
 def add_options(parser: argparse.ArgumentParser) -> None:
@@ -14,6 +9,19 @@ def add_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('filename', nargs='?', default='autotest2',
                         help='Input the name of your autotest file',
                         type=argparse.FileType('r', encoding='UTF-8'))
+
+
+def get_json_file(filename: str):
+    try:
+        with open(filename, 'r') as input_file:
+            json_file = json.load(input_file)
+        return json_file
+    except PermissionError:
+        print('Error: Unable to read file (Insufficient permissions)')
+        exit(1)
+    except json.JSONDecodeError:
+        print('Error: Unable to read file (Not in JSON format)')
+        exit(2)
 
 
 def main() -> None:
@@ -39,20 +47,3 @@ def main() -> None:
     except KeyError:
         print('Error: File not in autotest format (Not expected JSON)')
         exit(4)
-
-
-def get_json_file(filename: str):
-    try:
-        with open(filename, 'r') as input_file:
-            json_file = json.load(input_file)
-        return json_file
-    except PermissionError:
-        print('Error: Unable to read file (Insufficient permissions)')
-        exit(1)
-    except json.JSONDecodeError:
-        print('Error: Unable to read file (Not in JSON format)')
-        exit(2)
-
-
-if __name__ == '__main__':
-    main()

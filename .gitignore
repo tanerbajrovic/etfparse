@@ -2,4 +2,7 @@
 .vscode/*
 .idea/*
 
+# Python-specific files
+__pycache__/
+
 
