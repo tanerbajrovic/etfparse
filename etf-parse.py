@@ -8,10 +8,10 @@ __version__ = '1.0.0'
 
 
 def main(filename: str) -> None:
-    json_file = get_json_file(filename)
-    homework_name = json_file['name']
-    total_tests = len(json_file['tests'])
     try:
+        json_file = get_json_file(filename)
+        homework_name = json_file['name']
+        total_tests = len(json_file['tests'])
         with open(filename + '-output.txt', 'w') as output_file:
             for test_number in range(1, total_tests):
                 code = json_file['tests'][test_number]['patch'][0]['code']
@@ -23,6 +23,9 @@ def main(filename: str) -> None:
     except PermissionError:
         print('Error: Unable to create an output file (Insufficient permissions)')
         exit(3)
+    except KeyError:
+        print('Error: File not in autotest format (Not expected JSON)')
+        exit(4)
 
 
 def get_json_file(filename: str):
