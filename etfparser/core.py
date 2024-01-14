@@ -34,6 +34,7 @@ def main() -> None:
         homework_name = json_file['name']
         total_tests = len(json_file['tests'])
         with open(filename + '-output.txt', 'w') as output_file:
+            output_file.write(homework_name + '\n\n')
             for test_number in range(1, total_tests):
                 code = json_file['tests'][test_number]['patch'][0]['code']
                 expected_output = json_file['tests'][test_number]['execute']['expect'][0]
