@@ -13,7 +13,7 @@ def add_options(parser: argparse.ArgumentParser) -> None:
 
 def get_json_reader(filename: str):
     try:
-        with open(filename, 'r') as input_file:
+        with open(filename, 'r', encoding='UTF-8') as input_file:
             json_reader = json.load(input_file)
         return json_reader
     except PermissionError:
@@ -62,7 +62,7 @@ def main() -> None:
         autotests = get_autotests(json_reader)
         expected_outputs = get_expected_outputs(json_reader)
         homework_name = get_homework_name(json_reader)
-        with open(filename + '-output.txt', 'w') as output_file:
+        with open(filename + '-output.txt', 'w', encoding='UTF-8') as output_file:
             output_file.write(homework_name + '\n\n')
             current_test_number = 1
             while len(autotests) != 0:
