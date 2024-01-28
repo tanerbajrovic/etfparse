@@ -1,4 +1,4 @@
-# ETF Autotest Parser
+# ETFParse
 
 ## About
 
@@ -14,4 +14,4 @@ python etfparse.py <filename>
 ```
 
 You should replace `<filename>` with the name of the file containing unit tests. By default, this argument will be 
-`autotest2`, so simply running `python etf-parse.py` will look for `autotest2` in the current directory.
+`autotest2`, so simply running `python etfparse.py` will look for `autotest2` in the current directory.
