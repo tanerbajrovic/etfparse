@@ -1,3 +1,4 @@
+import io
 import json
 import argparse
 
@@ -6,8 +7,8 @@ def add_options(parser: argparse.ArgumentParser) -> None:
     """
     Adds following options to the argument parser
     """
-    parser.add_argument('filename', nargs='?', default='autotest2',
-                        help='Input the name of your autotest file',
+    parser.add_argument('files', nargs='*', default=['autotest2'],
+                        help='Input the name of your autotest file(s)',
                         type=argparse.FileType('r', encoding='UTF-8'))
 
 
@@ -15,13 +16,16 @@ def get_json_reader(filename: str):
     try:
         with open(filename, 'r', encoding='UTF-8') as input_file:
             json_reader = json.load(input_file)
-        return json_reader
+            return json_reader
+    except FileNotFoundError:
+        print(f'Error: File {filename} not found!')
+        exit(1)
     except PermissionError:
         print('Error: Unable to read file (Insufficient permissions)')
-        exit(1)
+        exit(2)
     except json.JSONDecodeError:
         print('Error: Unable to read file (Not in JSON format)')
-        exit(2)
+        exit(3)
 
 
 def get_autotests(json_reader) -> list:
@@ -52,27 +56,35 @@ def get_homework_name(json_reader) -> str:
     return json_reader['name']
 
 
+def parse_file(filename: str) -> None:
+    json_reader = get_json_reader(filename)
+    autotests = get_autotests(json_reader)
+    expected_outputs = get_expected_outputs(json_reader)
+    homework_name = get_homework_name(json_reader)
+    with open(filename + '-output.txt', 'w', encoding='UTF-8') as output_file:
+        output_file.write(homework_name + '\n\n')
+        current_test_number = 1
+        while len(autotests) != 0:
+            autotest = autotests.pop()
+            expected_output = expected_outputs.pop()
+            output_file.write(f'// AT {current_test_number}' + '\n')
+            output_file.write(autotest + '\n\n')
+            output_file.write(f'Expected: {expected_output}' + '\n\n\n')
+            current_test_number = current_test_number + 1
+        print('Success: ' + f'"{homework_name}"')
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     add_options(parser)
     args = parser.parse_args()
-    filename = args.filename.name
+    files = args.files
     try:
-        json_reader = get_json_reader(filename)
-        autotests = get_autotests(json_reader)
-        expected_outputs = get_expected_outputs(json_reader)
-        homework_name = get_homework_name(json_reader)
-        with open(filename + '-output.txt', 'w', encoding='UTF-8') as output_file:
-            output_file.write(homework_name + '\n\n')
-            current_test_number = 1
-            while len(autotests) != 0:
-                autotest = autotests.pop()
-                expected_output = expected_outputs.pop()
-                output_file.write(f'// AT {current_test_number}' + '\n')
-                output_file.write(autotest + '\n\n')
-                output_file.write(f'Expected: {expected_output}' + '\n\n\n')
-                current_test_number = current_test_number + 1
-            print('Success: ' + f'"{homework_name}"')
+        for file in files:
+            if isinstance(file, io.TextIOWrapper):
+                parse_file(file.name)
+            else:
+                parse_file(file)
     except PermissionError:
         print('Error: Unable to create an output file (Insufficient permissions)')
         exit(3)
