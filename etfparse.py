@@ -8,6 +8,13 @@ import argparse
 __version__ = '1.2.0'
 
 
+# Error codes
+EXIT_INVALID_FILENAME: int = 1
+EXIT_INSUFFICIENT_PERMISSIONS: int = 2
+EXIT_INVALID_JSON_FORMAT: int = 3
+EXIT_INVALID_AUTOTEST_FORMAT: int = 4
+
+
 def add_options(parser: argparse.ArgumentParser) -> None:
     """
     Adds following options to the argument parser
@@ -31,13 +38,13 @@ def get_json_raw(filename: str) -> dict:
             return json_raw
     except FileNotFoundError:
         print(f'Error: File "{filename}" not found!')
-        exit(1)
+        exit(EXIT_INVALID_FILENAME)
     except PermissionError:
         print('Error: Unable to read file (Insufficient permissions)')
-        exit(2)
+        exit(EXIT_INSUFFICIENT_PERMISSIONS)
     except json.JSONDecodeError:
         print('Error: Unable to read file (Not in JSON format)')
-        exit(3)
+        exit(EXIT_INVALID_JSON_FORMAT)
 
 
 def get_autotests(json_raw) -> list[str]:
@@ -53,7 +60,7 @@ def get_autotests(json_raw) -> list[str]:
         return autotests
     except KeyError:
         print('Error: File not in expected autotest format')
-        exit(5)
+        exit(EXIT_INVALID_AUTOTEST_FORMAT)
 
 
 def get_expected_outputs(json_raw) -> list[str]:
@@ -69,7 +76,7 @@ def get_expected_outputs(json_raw) -> list[str]:
         return expected_outputs
     except KeyError:
         print('Error: File not in expected autotest format')
-        exit(5)
+        exit(EXIT_INVALID_AUTOTEST_FORMAT)
 
 
 def get_homework_name(json_raw) -> str:
@@ -81,7 +88,7 @@ def get_homework_name(json_raw) -> str:
         return json_raw['name']
     except KeyError:
         print('Error: File not in expected autotest format')
-        exit(5)
+        exit(EXIT_INVALID_AUTOTEST_FORMAT)
 
 
 def parse_file(filename: str) -> None:
@@ -105,7 +112,7 @@ def parse_file(filename: str) -> None:
             print('Success: ' + f'"{homework_name}"')
     except PermissionError:
         print('Error: Unable to create file (Insufficient permissions)')
-        exit(4)
+        exit(EXIT_INSUFFICIENT_PERMISSIONS)
 
 
 def main() -> None:
